@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Simple City Simulation</title>
+<style>
+body { margin:0; overflow:hidden; font-family:sans-serif; }
+#ui {
+ position:absolute;
+ top:10px;
+ left:10px;
+ background:rgba(0,0,0,0.6);
+ color:white;
+ padding:10px;
+ border-radius:8px;
+}
+button{margin-top:6px}
+</style>
+</head>
+<body>
+<div id="ui">
+City Simulation<br>
+Cars: <span id="carCount">0</span><br>
+<button onclick="addCar()">Add Car</button>
+<button onclick="togglePause()">Pause / Play</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+
+let scene = new THREE.Scene();
+let camera = new THREE.PerspectiveCamera(60, window.innerWidth/window.innerHeight, 0.1, 1000);
+let renderer = new THREE.WebGLRenderer({antialias:true});
+renderer.setSize(window.innerWidth, window.innerHeight);
+document.body.appendChild(renderer.domElement);
+
+camera.position.set(20,25,20);
+camera.lookAt(0,0,0);
+
+let light = new THREE.DirectionalLight(0xffffff,1);
+light.position.set(10,20,10);
+scene.add(light);
+
+let ambient = new THREE.AmbientLight(0xffffff,0.4);
+scene.add(ambient);
+
+// ground
+let groundGeo = new THREE.PlaneGeometry(200,200);
+let groundMat = new THREE.MeshStandardMaterial({color:0x2e7d32});
+let ground = new THREE.Mesh(groundGeo, groundMat);
+ground.rotation.x = -Math.PI/2;
+scene.add(ground);
+
+// roads
+let roads = [];
+let roadMaterial = new THREE.MeshStandardMaterial({color:0x333333});
+
+function createRoad(x,z,rot=false){
+ let geo = new THREE.BoxGeometry(rot?40:4,0.1,rot?4:40);
+ let road = new THREE.Mesh(geo, roadMaterial);
+ road.position.set(x,0.05,z);
+ scene.add(road);
+ roads.push(road);
+}
+
+createRoad(0,0,false);
+createRoad(0,0,true);
+
+// buildings
+let buildings=[];
+function createBuilding(x,z){
+ let height = Math.random()*8+2;
+ let geo = new THREE.BoxGeometry(3,height,3);
+ let mat = new THREE.MeshStandardMaterial({color:Math.random()*0xffffff});
+ let b = new THREE.Mesh(geo,mat);
+ b.position.set(x,height/2,z);
+ scene.add(b);
+ buildings.push(b);
+}
+
+for(let x=-15;x<=15;x+=6){
+ for(let z=-15;z<=15;z+=6){
+ if(Math.abs(x)>2 || Math.abs(z)>2) createBuilding(x,z);
+ }
+}
+
+// cars
+let cars=[];
+
+function addCar(){
+ let geo = new THREE.BoxGeometry(1,0.5,2);
+ let mat = new THREE.MeshStandardMaterial({color:0xff0000});
+ let car = new THREE.Mesh(geo,mat);
+ car.position.set(-20,0.25,0);
+ car.userData.speed = 0.1 + Math.random()*0.05;
+ scene.add(car);
+ cars.push(car);
+ document.getElementById("carCount").innerText=cars.length;
+}
+
+// add some initial cars
+for(let i=0;i<5;i++) addCar();
+
+let paused=false;
+
+function togglePause(){
+ paused=!paused;
+}
+
+function updateCars(){
+ cars.forEach(car=>{
+ car.position.x += car.userData.speed;
+ if(car.position.x>20) car.position.x=-20;
+ });
+}
+
+function animate(){
+ requestAnimationFrame(animate);
+ if(!paused) updateCars();
+ renderer.render(scene,camera);
+}
+
+animate();
+
+window.addEventListener('resize',()=>{
+ camera.aspect = window.innerWidth/window.innerHeight;
+ camera.updateProjectionMatrix();
+ renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+</script>
+</body>
+</html>
