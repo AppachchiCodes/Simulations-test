@@ -30,7 +30,7 @@ Click planet: focus<br>
 
 <script>
 
-// ------------------ BASIC ENGINE ------------------
+// BASIC ENGINE
 
 const scene = new THREE.Scene()
 
@@ -57,7 +57,7 @@ scene.add(ambient)
 const sunLight = new THREE.PointLight(0xffffff,2,5000)
 scene.add(sunLight)
 
-// ------------------ MILKY WAY (MATH SPIRAL) ------------------
+// MILKY WAY (MATH SPIRAL)
 
 const starCount = 20000
 const galaxyGeo = new THREE.BufferGeometry()
@@ -109,7 +109,7 @@ vertexColors:true
 const galaxy = new THREE.Points(galaxyGeo,galaxyMat)
 scene.add(galaxy)
 
-// ------------------ SUN ------------------
+// SUN 
 
 const sunGeo = new THREE.SphereGeometry(20,64,64)
 const sunMat = new THREE.MeshBasicMaterial({color:0xffcc33})
@@ -118,7 +118,7 @@ scene.add(sun)
 
 sunLight.position.copy(sun.position)
 
-// ------------------ PLANETS ------------------
+//PLANETS
 
 const planetData=[
 {name:"Mercury",size:2,dist:60,speed:.02,color:0xaaaaaa},
@@ -157,7 +157,7 @@ const ring=new THREE.Mesh(ringGeo,ringMat)
 ring.rotation.x=Math.PI/2
 planets[5].mesh.add(ring)
 
-// ------------------ ORBITS ------------------
+// ORBITS
 
 planetData.forEach(p=>{
 
@@ -175,7 +175,7 @@ planetData.forEach(p=>{
 
 })
 
-// ------------------ INTERACTION ------------------
+// INTERACTION
 
 const raycaster=new THREE.Raycaster()
 const mouse=new THREE.Vector2()
@@ -209,7 +209,7 @@ function focusGalaxy(){
  camera.position.set(0,400,900)
 }
 
-// ------------------ ANIMATION ------------------
+// ANIMATION
 
 function animate(){
 
@@ -236,7 +236,7 @@ function animate(){
 
 animate()
 
-// ------------------ RESIZE ------------------
+// RESIZE 
 
 window.addEventListener("resize",()=>{
 
